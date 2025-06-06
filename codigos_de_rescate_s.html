@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>Códigos de Rescate - Juego Educativo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;700&display=swap');
+  :root {
+    --red: #d93025;
+    --dark-red: #9b1d1a;
+    --orange: #ff6f3c;
+    --dark-orange: #b54e2c;
+    --blue: #1e90ff;
+    --light-blue: #a6cdfd;
+    --white: #f8f9fa;
+    --black: #121212;
+    --shadow-color: rgba(0,0,0,0.3);
+    --green: #28a745;
+    --error-red: #e63946;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    background: (var(--black));
+    margin: 0; padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient (var(--black));
+    color: var(--white);
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  #app {
+    width: 100vw;
+    max-width: 480px;
+    height: 100vh;
+    background: var(--black);
+    border-radius: 25px;
+    box-shadow: 0 0 30px var(--shadow-color);
+    background: var(--black);
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: linear-gradient(90deg, var(--red) 0%, var(--orange) 100%);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 3px 8px var(--shadow-color);
+  }
+  #logo {
+    width: 46px;
+    height: 46px;
+    margin-right: 15px;
+    flex-shrink: 0;
+    animation: pulse 2.4s infinite;
+    fill: white;
+    filter: drop-shadow(0 0 3px white);
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 3px var(--white)); }
+    50% { transform: scale(1.1); filter: drop-shadow(0 0 8px var(--orange)); }
+  }
+  header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin: 0;
+    text-shadow: 1px 1px 6px var(--dark-red);
+    user-select: none;
+  }
+  main {
+    flex-grow: 1;
+    padding: 20px;
+    background: #121212;
+    overflow-y: auto;
+  }
+  .screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .screen.active {
+    display: flex;
+  }
+  h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: var(--orange);
+    text-shadow: 0 0 8px var(--red);
+  }
+  input, select {
+    width: 100%;
+    max-width: 320px;
+    padding: 14px 18px;
+    margin: 7px 0 10px 0;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    border: none;
+    outline: none;
+    background: var(--dark-red);
+    color: var(--white);
+    box-shadow: 0 0 8px var(--red);
+    transition: background 0.3s ease;
+  }
+  input:focus, select:focus {
+    background: var(--red);
+    box-shadow: 0 0 12px var(--orange);
+  }
+  button {
+    background: var(--orange);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 20px;
+    padding: 14px 18px;
+    margin: 8px 0;
+    cursor: pointer;
+    width: 100%;
+    max-width: 320px;
+    box-shadow: 0 0 12px var(--orange);
+    transition: background 0.3s, transform 0.2s;
+    user-select: none;
+  }
+  button:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 6px var(--red);
+  }
+  button:hover {
+    background: var(--red);
+    box-shadow: 0 0 20px var(--red);
+  }
+  p, label {
+    font-size: 1.1rem;
+    max-width: 400px;
+    line-height: 1.5;
+    color: var(--white);
+    margin-bottom: 15px;
+    text-shadow: 0 0 6px var(--dark-red);
+  }
+  ul.options-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto 30px;
+    max-width: 350px;
+    width: 100%;
+  }
+  ul.options-list li {
+    margin: 12px 0;
+  }
+  ul.options-list button {
+    width: 100%;
+  }
+  /* Interactive game simulation */
+  .game-situation {
+    background: linear-gradient(135deg, var(--red), var(--orange));
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 0 15px var(--shadow-color);
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 0 0 8px var(--dark-red);
+    min-height: 70px;
+  }
+  .feedback-message {
+    max-width: 320px;
+    margin: 10px auto 24px;
+    padding: 12px 18px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-align: center;
+  }
+  .feedback-correct {
+    background-color: var(--green);
+    color: var(--white);
+    text-shadow: none;
+  }
+  .feedback-wrong {
+    background-color: var(--error-red);
+    color: var(--white);
+    text-shadow: none;
+  }
+  /* Profile/Progress/Ajustes */
+  .user-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .user-section-btn {
+    background: var(--blue);
+    box-shadow: 0 0 12px var(--light-blue);
+  }
+  .user-section-btn:hover {
+    background: var(--light-blue);
+    color: var(--black);
+    box-shadow: 0 0 20px var(--blue);
+  }
+  /* Scroll styling for mobile */
+  main::-webkit-scrollbar {
+    width: 6px;
+  }
+  main::-webkit-scrollbar-track {
+    background: #222;
+    border-radius: 3px;
+  }
+  main::-webkit-scrollbar-thumb {
+    background: var(--red);
+    border-radius: 3px;
+  }
+  /* Responsive font sizing */
+  @media (max-width: 400px) {
+    button, input, select {
+      font-size: 1rem;
+      padding: 12px 15px;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="app" role="main" aria-live="polite">
+  <header>
+    <!-- Cruz roja estilo simple SVG -->
+    <svg id="logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false" >
+      <rect x="24" y="8" width="16" height="48" />
+      <rect x="8" y="24" width="48" height="16" />
+    </svg>
+    <h1>Códigos de Rescate</h1>
+  </header>
+  <main>
+    <!-- Pantalla de inicio -->
+    <section class="screen active" id="home" aria-label="Pantalla de inicio">
+      <h2>Bienvenido a Códigos de Rescate</h2>
+      <button aria-label="Ir a inicio de sesión" onclick="showScreen('login')">Iniciar Sesión</button>
+      <button aria-label="Ir a registro" onclick="showScreen('register')">Registrarse</button>
+    </section>
+    <!-- Pantalla de inicio de sesión -->
+    <section class="screen" id="login" aria-label="Pantalla de inicio de sesión">
+      <h2>Iniciar Sesión</h2>
+      <label for="loginUser">Correo</label>
+      <input type="text" id="loginUser" placeholder="Correo" aria-required="true" autocomplete="username"/>
+      <label for="loginPass">Contraseña</label>
+      <input type="password" id="loginPass" placeholder="Contraseña" aria-required="true" autocomplete="current-password"/>
+      <div id="loginError" role="alert" style="color: var(--error-red); font-weight:bold; margin-bottom: 15px; display:none;"></div>
+      <button onclick="login()">Entrar</button>
+      <p>¿No tienes cuenta? <a href="#" onclick="showScreen('register')" style="color: var(--light-blue); text-decoration: underline;">Regístrate aquí</a></p>
+      <button onclick="showScreen('home')">Volver</button>
+    </section>
+    <!-- Pantalla de registro -->
+    <section class="screen" id="register" aria-label="Pantalla de registro">
+      <h2>Registro</h2>
+      <label for="regName">Nombre completo</label>
+      <input type="text" id="regName" placeholder="Nombre completo" aria-required="true" autocomplete="name"/>
+      <label for="regEmail">Correo electrónico</label>
+      <input type="email" id="regEmail" placeholder="Correo electrónico" aria-required="true" autocomplete="email"/>
+      <label for="regPass">Contraseña</label>
+      <input type="password" id="regPass" placeholder="Contraseña" aria-required="true" autocomplete="new-password"/>
+      <label for="regPassConfirm">Confirmar contraseña</label>
+      <input type="password" id="regPassConfirm" placeholder="Confirmar contraseña" aria-required="true" autocomplete="new-password"/>
+      <div id="registerError" role="alert" style="color: var(--error-red); font-weight:bold; margin-bottom: 15px; display:none;"></div>
+      <button onclick="register()">Registrarse</button>
+          <p>¿Ya tienes cuenta? <a href="#" onclick="showScreen('login')" style="color: var(--light-blue); text-decoration: underline;">Inicia sesión aquí</a></p>
+      <button onclick="showScreen('home')">Volver</button>
+    </section>
+    <!-- Pantalla de niveles -->
+    <section class="screen" id="levels" aria-label="Pantalla de selección de niveles">
+      <h2>Selecciona un Nivel</h2>
+      <ul class="options-list" role="list">
+        <li><button onclick="startGame(1)">Nivel 1: Primeros Auxilios Básicos</button></li>
+        <li><button onclick="startGame(2)">Nivel 2: Situaciones Avanzadas</button></li>
+        <li><button onclick="startGame(3)">Nivel 3: Casos Complejos</button></li>
+      </ul>
+      
+<div style="width: 100%; max-width: 320px; background: #333; border-radius: 10px; overflow: hidden; margin-top: 15px;">
+  <div style="width: 60%; height: 20px; background: var(--green); transition: width 0.4s;"></div>
+</div>
+
+      <button onclick="showScreen('user')">Volver</button>
+    </section>
+    <!-- Pantalla de juego -->
+    <section class="screen" id="game" aria-label="Pantalla del juego">
+      <h2>Situación de Emergencia</h2>
+      <div class="game-situation" id="game-description" tabindex="0" aria-live="polite" aria-atomic="true">Cargando situación...</div>
+      <ul class="options-list" role="list" id="game-options" aria-label="Opciones de respuesta"></ul>
+      <div id="game-feedback" role="alert" tabindex="0" class="feedback-message" style="display:none;"></div>
+      <button onclick="endGame()">Salir al menú niveles</button>
+    </section>
+    <!-- Pantalla principal de usuario -->
+    <section class="screen" id="user" aria-label="Pantalla principal del usuario">
+      <h2>Área de Usuario</h2>
+      <nav class="user-sections" role="navigation" aria-label="Navegación de usuario">
+        <button class="user-section-btn" onclick="showScreen('profile')">Perfil</button>
+        <button class="user-section-btn" onclick="showScreen('progress')">Progreso</button>
+        <button class="user-section-btn" onclick="showScreen('settings')">Ajustes</button>
+        <button class="user-section-btn" onclick="showScreen('help')">Dudas y Ayuda</button>
+      </nav>
+      <button onclick="showScreen('levels')">Jugar</button>
+      <button onclick="logout()">Cerrar sesión</button>
+    </section>
+    <!-- Pantalla de perfil -->
+    <section class="screen" id="profile" aria-label="Pantalla de perfil">
+      <h2>Perfil</h2>
+      <img src="https://i.pinimg.com/236x/d1/e3/d2/d1e3d2a12bc3d0221898c4391dffcfff.jpg" alt="Foto de perfil" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%; margin-bottom: 15px; box-shadow: 0 0 12px var(--light-blue);">
+      <p id="profile-info">Nombre: Usuario<br/>Correo: usuario@email.com</p>
+      
+
+      <button onclick="showScreen('user')">Volver</button>
+    </section>
+    <!-- Pantalla de progreso -->
+    <section class="screen" id="progress" aria-label="Pantalla de progreso">
+      <h2>Progreso</h2>
+      <div id="progress-info" tabindex="0" aria-live="polite" aria-atomic="true" style="max-width: 320px; margin: auto; color: var(--orange);">
+        Cargando progreso...
+      </div>
+      
+<div style="width: 100%; max-width: 320px; background: #333; border-radius: 10px; overflow: hidden; margin-top: 15px;">
+  <div style="width: 60%; height: 20px; background: var(--green); transition: width 0.4s;"></div>
+</div>
+
+      <button onclick="showScreen('user')">Volver</button>
+    </section>
+    <!-- Pantalla de ajustes -->
+    <section class="screen" id="settings" aria-label="Pantalla de ajustes">
+      <h2>Ajustes</h2>
+      <p>Opciones de configuración próximamente...</p>
+     
+
+      <button onclick="showScreen('user')">Volver</button>
+    </section>
+    <!-- Pantalla de ayuda/dudas -->
+    <section class="screen" id="help" aria-label="Pantalla de dudas y ayuda">
+      <h2>Dudas y Ayuda</h2>
+      <ul class="options-list" role="list" aria-label="Selección de situaciones de emergencia">
+        <li><button onclick="showScreen('emergency-bleed')">Hemorragias</button></li>
+        <li><button onclick="showScreen('emergency-burn')">Quemaduras</button></li>
+        <li><button onclick="showScreen('emergency-rcp')">RCP</button></li>
+        <li><button onclick="showScreen('emergency-choke')">Atragantamiento</button></li>
+<li><button onclick="alert('Desmayo: Coloca a la persona en posición horizontal y eleva sus piernas.')">Desmayo</button></li>
+<li><button onclick="alert('Fracturas: Inmoviliza la zona y busca atención médica.')">Fracturas</button></li>
+<li><button onclick="alert('Intoxicación: No induzcas el vómito, llama a emergencias.')">Intoxicación</button></li>
+
+      </ul>
+      
+
+      <button onclick="showScreen('user')">Volver</button>
+    </section>
+    <!-- Emergencias particulares -->
+    <section class="screen" id="emergency-bleed" aria-label="Hemorragias">
+      <h2>Hemorragias</h2>
+      <p>Para detener la hemorragia:</p>
+      <ul style="text-align:left;max-width:350px;margin:auto;">
+        <li>1. Presiona firmemente con un paño limpio sobre la herida.</li>
+        <li>2. Eleva la extremidad si es posible.</li>
+        <li>3. Busca ayuda médica urgente.</li>
+      </ul>
+      <button onclick="showScreen('help')">Volver</button>
+    </section>
+    <section class="screen" id="emergency-burn" aria-label="Quemaduras">
+      <h2>Quemaduras</h2>
+      <p>Para atender quemaduras:</p>
+      <ul style="text-align:left;max-width:350px;margin:auto;">
+        <li>1. Enfría la zona con agua fría (no hielo) al menos 10 minutos.</li>
+        <li>2. No retires ropa pegada ni revientes ampollas.</li>
+        <li>3. Cubre con paño limpio y busca ayuda médica si es grave.</li>
+      </ul>
+      <button onclick="showScreen('help')">Volver</button>
+    </section>
+    <section class="screen" id="emergency-rcp" aria-label="RCP">
+      <h2>Reanimación Cardio Pulmonar (RCP)</h2>
+      <p>Pasos básicos para realizar RCP:</p>
+      <ul style="text-align:left;max-width:350px;margin:auto;">
+        <li>1. Llama a emergencias.</li>
+        <li>2. Coloca a la persona en posición horizontal.</li>
+        <li>3. Realiza compresiones torácicas firmes y rápidas (al menos 100 por minuto).</li>
+        <li>4. Alterna con respiración boca a boca si sabes cómo.</li>
+      </ul>
+      <button onclick="showScreen('help')">Volver</button>
+    </section>
+    <section class="screen" id="emergency-choke" aria-label="Atragantamiento">
+      <h2>Atragantamiento</h2>
+      <p>En caso de atragantamiento:</p>
+      <ul style="text-align:left;max-width:350px;margin:auto;">
+        <li>1. Anima a la persona a toser fuertemente.</li>
+        <li>2. Si no respira, realiza golpes en la espalda y maniobra Heimlich.</li>
+        <li>3. Llama a emergencias si persiste.</li>
+      </ul>
+      <button onclick="showScreen('help')">Volver</button>
+    </section>
+  </main>
+</div>
+<script>
+  const usersDB = []; // Simula base de datos en memoria: {name,email,username,password,progress}
+  let currentUser = null;
+
+  const gameSituations = {
+    1: {
+      description: "Un amigo se cortó con un vidrio y está sangrando. ¿Qué haces primero?",
+      options: [
+        { text: "Presionar la herida con un paño limpio", correct: true, feedback: "Correcto, presionar la herida ayuda a detener la hemorragia." },
+        { text: "Buscar agua para lavar la herida", correct: false, feedback: "No es lo más urgente, presionar la herida es prioritario." },
+        { text: "Ignorar la herida", correct: false, feedback: "No es correcto, debes actuar rápido para evitar pérdida de sangre." }
+      ]
+    },
+    2: {
+      description: "Una persona está inconsciente y no responde, ¿qué haces?",
+      options: [
+        { text: "Llamar a emergencias inmediatamente", correct: true, feedback: "Muy bien, llamar a emergencias es lo primero que debes hacer." },
+        { text: "Mover a la persona bruscamente", correct: false, feedback: "No, mover a una persona inconsciente puede causar daños." },
+        { text: "Dejarla y esperar a que se recupere", correct: false, feedback: "No es seguro, se debe buscar ayuda urgente." }
+      ]
+    },
+    3: {
+      description: "Alguien se está atragantando y no puede respirar, ¿qué haces?",
+      options: [
+        { text: "Realizar la maniobra de Heimlich", correct: true, feedback: "Correcto, la maniobra de Heimlich puede salvar vidas." },
+        { text: "Pedirle que tome agua", correct: false, feedback: "No es efectivo, la maniobra es más urgente." },
+        { text: "Golpear a la persona en la espalda fuerte", correct: false, feedback: "Golpes suaves pueden ayudar, pero es mejor hacer Heimlich." }
+      ]
+    }
+  };
+
+  function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+    clearFeedbacks();
+    if(screenId==='user'){
+      updateProfile();
+      updateProgress();
+    }
+  }
+  function clearFeedbacks(){
+    const gf = document.getElementById('game-feedback');
+    if (gf) { gf.style.display = 'none'; gf.textContent = ''; gf.classList.remove('feedback-correct','feedback-wrong'); }
+    const loginError = document.getElementById('loginError');
+    if (loginError) { loginError.style.display = 'none'; loginError.textContent = ''; }
+    const registerError = document.getElementById('registerError');
+    if (registerError) { registerError.style.display = 'none'; registerError.textContent = ''; }
+  }
+  function login(){
+    clearFeedbacks();
+    const username = document.getElementById('loginUser').value.trim();
+    const password = document.getElementById('loginPass').value.trim();
+    const loginError = document.getElementById('loginError');
+    if(!username || !password){
+      loginError.textContent="Por favor, rellena todos los campos.";
+      loginError.style.display='block';
+      return;
+    }
+    const foundUser = usersDB.find(u=>u.username.toLowerCase() === username.toLowerCase());
+    if(!foundUser){
+      loginError.textContent="Usuario no encontrado. ¿Quieres registrarte?";
+      loginError.style.display='block';
+      return;
+    }
+    if(foundUser.password !== password){
+      loginError.textContent="Contraseña incorrecta, intenta de nuevo.";
+      loginError.style.display='block';
+      return;
+    }
+    currentUser = foundUser;
+    alert("¡Bienvenido, "+currentUser.name+"!");
+    showScreen('user');
+  }
+  function register(){
+    clearFeedbacks();
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const username = email.toLowerCase();
+    const password = document.getElementById('regPass').value.trim();
+    const passwordConfirm = document.getElementById('regPassConfirm').value.trim();
+    const registerError = document.getElementById('registerError');
+    if(!name || !email || !password || !passwordConfirm){
+      registerError.textContent = "Por favor, rellena todos los campos.";
+      registerError.style.display = "block";
+      return;
+    }
+    // Validar email simple
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@"]+\.)+[^<>()[\]\\.,;:\s@"]{2,})$/i;
+    if(!re.test(String(email).toLowerCase())){
+      registerError.textContent = "Correo electrónico inválido.";
+      registerError.style.display = "block";
+      return;
+    }
+    if(password !== passwordConfirm){
+      registerError.textContent = "Las contraseñas no coinciden.";
+      registerError.style.display = "block";
+      return;
+    }
+    // Check usuario duplicado
+    if(usersDB.find(u=>u.username === username)){
+      registerError.textContent = "Ya existe un usuario registrado con ese correo. Por favor, inicia sesión.";
+      registerError.style.display = "block";
+      return;
+    }
+    // Crear usuario
+    const newUser = {name,email,username,password,progress:{levelsCompleted:[],topicsLearned:[]}};
+    usersDB.push(newUser);
+    currentUser = newUser;
+    alert(`Registro exitoso. Bienvenido, ${name}!`);
+    showScreen('user');
+  }
+  function logout(){
+    if(confirm("¿Quieres cerrar sesión?")){
+      currentUser = null;
+      showScreen('home');
+    }
+  }
+  function updateProfile(){
+    if(!currentUser) return;
+    const profileInfo = document.getElementById('profile-info');
+    profileInfo.innerHTML = `Nombre: <strong>${currentUser.name}</strong><br/>Correo: <strong>${currentUser.email}</strong>`;
+  }
+  function updateProgress(){
+    if(!currentUser) return;
+    const progressInfo = document.getElementById('progress-info');
+    if(currentUser.progress.levelsCompleted.length === 0){
+      progressInfo.textContent = "No has completado ningún nivel aún. ¡Vamos a jugar!";
+    } else {
+      progressInfo.innerHTML = `<strong>Niveles completados:</strong> ${currentUser.progress.levelsCompleted.join(', ')}<br/>
+        <strong>Temas aprendidos:</strong> ${currentUser.progress.topicsLearned.length > 0 ? currentUser.progress.topicsLearned.join(', ') : 'Ninguno aún'}`;
+    }
+  }
+  function startGame(level){
+    clearFeedbacks();
+    if(!currentUser){
+      alert("Debes iniciar sesión o registrarte antes de jugar.");
+      showScreen('login');
+      return;
+    }
+    const situation = gameSituations[level];
+    if(!situation){
+      alert("Nivel inválido.");
+      return;
+    }
+    const desc = document.getElementById('game-description');
+    const optionsList = document.getElementById('game-options');
+    const feedback = document.getElementById('game-feedback');
+    desc.textContent = situation.description;
+    feedback.style.display = 'none';
+    optionsList.innerHTML = '';
+    situation.options.forEach(opt => {
+      const li = document.createElement('li');
+      const btn = document.createElement('button');
+      btn.textContent = opt.text;
+      btn.onclick = () => handleGameOption(opt, level);
+      li.appendChild(btn);
+      optionsList.appendChild(li);
+    });
+    showScreen('game');
+  }
+  function handleGameOption(option, level){
+    const feedback = document.getElementById('game-feedback');
+    feedback.style.display = 'block';
+    feedback.textContent = option.feedback;
+    if(option.correct){
+      feedback.classList.remove('feedback-wrong');
+      feedback.classList.add('feedback-correct');
+      if(!currentUser.progress.levelsCompleted.includes(level)){
+        currentUser.progress.levelsCompleted.push(level);
+      }
+      if(!currentUser.progress.topicsLearned.includes(option.text)){
+        currentUser.progress.topicsLearned.push(option.text);
+      }
+      updateProgress();
+      // Mostrar el feedback y después al menú niveles
+      setTimeout(() => {
+        feedback.style.display = 'none';
+        showScreen('levels');
+      }, 3500);
+    } else {
+      feedback.classList.remove('feedback-correct');
+      feedback.classList.add('feedback-wrong');
+    }
+  }
+  function endGame(){
+    clearFeedbacks();
+    showScreen('levels');
+  }
+  // Iniciar en casa
+  showScreen('home');
+</script>
+</body>
+</html>
